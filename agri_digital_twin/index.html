@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriTwin - Digital Twin for Smart Farming</title>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <img src="logo.png" alt="AgriTech Logo" class="logo-img">
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#home" class="nav-link active" data-page="home">Home</a></li>
+                <li><a href="#dashboard" class="nav-link" data-page="dashboard">Dashboard</a></li>
+                <li><a href="#satellite" class="nav-link" data-page="satellite">Satellite Imagery</a></li>
+                <li><a href="#predictions" class="nav-link" data-page="predictions">AI Predictions</a></li>
+                <li><a href="#about" class="nav-link" data-page="about">About</a></li>
+            </ul>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Container -->
+    <div class="page-container">
+        
+        <!-- 1. LANDING PAGE -->
+        <section id="home" class="page active" style="position: relative;">
+            <canvas id="hero-particles" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0;"></canvas>
+            <div class="hero">
+                <div class="hero-content" data-aos="fade-right">
+                    <h1 class="hero-title">AI-Powered Digital Twin for Smart Agriculture</h1>
+
+                    <p class="hero-subtitle">
+                        Predict crop health, growth, yield, and market demand using satellite imagery, weather,
+                        soil health, and AI simulations.
+                    </p>
+                    <div class="hero-buttons">
+                        <button class="btn btn-primary" onclick="navigateToPage('dashboard')">
+                            📊 Start Monitoring
+                        </button>
+                    </div>
+                </div>
+                <div class="hero-image" data-aos="fade-left">
+                    <div class="floating-card">
+                        <div class="card-icon">🛰️</div>
+                        <div class="card-text">Satellite Imagery</div>
+                    </div>
+                    <div class="floating-card delay-1">
+                        <div class="card-icon">🌦️</div>
+                        <div class="card-text">Weather Data</div>
+                    </div>
+                    <div class="floating-card delay-2">
+                        <div class="card-icon">🧪</div>
+                        <div class="card-text">Soil Health</div>
+                    </div>
+                    <div class="floating-card delay-3">
+                        <div class="card-icon">📈</div>
+                        <div class="card-text">Market Demand</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features Section -->
+            <div class="features-section">
+                <h2 class="section-title" data-aos="fade-down">Why Choose AgriTwin?</h2>
+                <div class="features-grid">
+                    <div class="feature-card" data-aos="fade-up" data-aos-delay="0">
+                        <div class="feature-icon">🛰️</div>
+                        <h3>Satellite Monitoring</h3>
+                        <p>Real-time crop monitoring using ISRO BHUVAN satellite imagery with NDVI analysis</p>
+                    </div>
+                    <div class="feature-card" data-aos="fade-up" data-aos-delay="100">
+                        <div class="feature-icon">🤖</div>
+                        <h3>AI Predictions</h3>
+                        <p>Advanced machine learning models predict crop health, yield, and optimal harvest time</p>
+                    </div>
+                    <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
+                        <div class="feature-icon">🌱</div>
+                        <h3>Digital Twin</h3>
+                        <p>Create virtual replicas of your farm to simulate different scenarios and outcomes</p>
+                    </div>
+                    <div class="feature-card" data-aos="fade-up" data-aos-delay="300">
+                        <div class="feature-icon">💹</div>
+                        <h3>Market Intelligence</h3>
+                        <p>Get real-time market price trends and demand predictions for better crop selection</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. DATA INPUT DASHBOARD -->
+        <section id="dashboard" class="page">
+            <div class="container">
+                <h1 class="page-title">Field Data Dashboard</h1>
+                <p class="page-subtitle">Enter your field information to get AI-powered insights</p>
+
+                <div class="dashboard-grid">
+                    <!-- Input Form -->
+                    <div class="dashboard-card" data-aos="fade-up">
+                        <h2 class="card-title">📍 Field Information</h2>
+                        <form id="fieldDataForm" class="input-form">
+                            <div class="form-group">
+                                <label for="district">District / Location</label>
+                                <input type="text" id="district" placeholder="e.g., Krishna, Andhra Pradesh" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="coordinates">GPS Coordinates</label>
+                                <input type="text" id="coordinates" placeholder="e.g., 16.5062, 80.6480" required>
+                                <div class="input-helper">Format: Latitude, Longitude (e.g., 16.5062, 80.6480)</div>
+                            </div>
+                            <div class="form-group">
+                                <button type="button" class="btn btn-secondary" onclick="fetchSoilData()" style="width: 100%;">
+                                    🌍 Fetch Soil Data from SoilGrids.org
+                                </button>
+                                <div class="input-helper">Click to fetch NPK values automatically from coordinates</div>
+                            </div>
+                            <div class="form-group">
+                                <label for="cropType">Current Crop Type (Optional)</label>
+                                <select id="cropType">
+                                    <option value="">Select crop</option>
+                                    <option value="rice">Rice</option>
+                                    <option value="wheat">Wheat</option>
+                                    <option value="cotton">Cotton</option>
+                                    <option value="sugarcane">Sugarcane</option>
+                                    <option value="maize">Maize</option>
+                                    <option value="pulses">Pulses</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="form-actions" data-aos="zoom-in" data-aos-delay="400">
+                    <button class="btn btn-primary btn-large" onclick="simulateAnalysis()">
+                        🚀 Analyze Field Data
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. SATELLITE IMAGERY SECTION -->
+        <section id="satellite" class="page">
+            <div class="container">
+                <h1 class="page-title">Satellite Imagery Analysis</h1>
+                <p class="page-subtitle">Real-time monitoring using ISRO BHUVAN (OPIE) satellite data</p>
+
+                <div class="satellite-controls">
+                    <div class="view-toggles">
+                        <button class="toggle-btn active" data-view="rgb">RGB View</button>
+                        <button class="toggle-btn" data-view="ndvi">NDVI View</button>
+                        <button class="toggle-btn" data-view="health">Crop Health Overlay</button>
+                    </div>
+                    <div class="satellite-info">
+                        <span class="info-badge">📅 Last Updated: Feb 23, 2026</span>
+                        <span class="info-badge">🛰️ Resolution: 10m</span>
+                    </div>
+                </div>
+
+                <div class="satellite-viewer" data-aos="zoom-in">
+                    <div class="satellite-image-container" id="satelliteView">
+                        <!-- RGB View (Default) -->
+                        <div class="satellite-image active" data-view="rgb">
+                            <div class="placeholder-image">
+                                <div class="placeholder-grid"></div>
+                                <div class="placeholder-text">
+                                    <h3>RGB Satellite View</h3>
+                                    <p>Natural color composite showing actual field conditions</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- NDVI View -->
+                        <div class="satellite-image" data-view="ndvi">
+                            <div class="placeholder-image ndvi-view">
+                                <div class="placeholder-grid"></div>
+                                <div class="placeholder-text">
+                                    <h3>NDVI Analysis</h3>
+                                    <p>Vegetation health index: Green indicates healthy crops</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Health Overlay -->
+                        <div class="satellite-image" data-view="health">
+                            <div class="placeholder-image health-view">
+                                <div class="placeholder-grid"></div>
+                                <div class="placeholder-text">
+                                    <h3>Crop Health Overlay</h3>
+                                    <p>AI-analyzed crop stress zones and growth patterns</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Legend -->
+                    <div class="satellite-legend">
+                        <h3>Legend</h3>
+                        <div class="legend-items" id="legendItems">
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: #00ff00;"></div>
+                                <span>Healthy Vegetation</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: #ffff00;"></div>
+                                <span>Moderate Health</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: #ff9900;"></div>
+                                <span>Stressed Crops</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: #ff0000;"></div>
+                                <span>Unhealthy/Bare Soil</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <h3>📡 About Satellite Data</h3>
+                    <p>
+                        Satellite images are sourced from <strong>ISRO BHUVAN (OPIE)</strong> platform, 
+                        providing high-resolution multispectral imagery for agricultural monitoring. 
+                        The system uses advanced image processing algorithms to calculate vegetation indices 
+                        and detect crop stress, diseases, and growth patterns.
+                    </p>
+                </div>
+
+                <div class="satellite-stats">
+                    <div class="stat-card">
+                        <div class="stat-value">87%</div>
+                        <div class="stat-label">Vegetation Coverage</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">0.72</div>
+                        <div class="stat-label">Average NDVI</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">12%</div>
+                        <div class="stat-label">Stress Zones</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">Good</div>
+                        <div class="stat-label">Overall Health</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. AI PREDICTION RESULTS PAGE -->
+        <section id="predictions" class="page">
+            <div class="container">
+                <h1 class="page-title">AI-Powered Crop Predictions</h1>
+                <p class="page-subtitle">Machine learning insights based on your field data</p>
+
+                <div class="dashboard-grid" style="margin-bottom: 2rem;">
+                    <!-- Soil Health Data -->
+                    <div class="dashboard-card" data-aos="fade-up" data-aos-delay="100">
+                        <h2 class="card-title">🧪 Soil Health Data</h2>
+                        <div id="soilDataStatus" class="data-note" style="margin-bottom: 1rem; display: none;">
+                            📡 Fetching soil data from SoilGrids.org...
+                        </div>
+                        <form class="input-form">
+                            <div class="form-group">
+                                <label for="nitrogen">Nitrogen (N) - g/kg <span class="data-badge real">Real Data</span></label>
+                                <input type="number" id="nitrogen" placeholder="Fetched from SoilGrids.org" min="0" step="0.01">
+                                <div class="input-helper">✓ Real measurement from SoilGrids satellite database</div>
+                            </div>
+                            <div class="form-group">
+                                <label for="phosphorus">Phosphorus (P) - ppm <span class="data-badge estimated">Estimated</span></label>
+                                <input type="number" id="phosphorus" placeholder="Estimated from soil properties" min="0" step="1">
+                                <div class="input-helper">⚠ Calculated from clay, organic matter & CEC data</div>
+                            </div>
+                            <div class="form-group">
+                                <label for="potassium">Potassium (K) - ppm <span class="data-badge estimated">Estimated</span></label>
+                                <input type="number" id="potassium" placeholder="Estimated from soil properties" min="0" step="1">
+                                <div class="input-helper">⚠ Calculated from clay, organic matter & CEC data</div>
+                            </div>
+                            <div class="form-group">
+                                <label for="ph">Soil pH (H2O) <span class="data-badge real">Real Data</span></label>
+                                <input type="number" id="ph" placeholder="Fetched from SoilGrids.org" min="0" max="14" step="0.1">
+                                <div class="input-helper">✓ Real measurement from SoilGrids satellite database</div>
+                            </div>
+                            <div class="form-group">
+                                <label for="organicCarbon">Organic Carbon - g/kg <span class="data-badge real">Real Data</span></label>
+                                <input type="number" id="organicCarbon" placeholder="Fetched from SoilGrids.org" min="0" step="0.1">
+                                <div class="input-helper">✓ Real measurement from SoilGrids satellite database</div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Weather Data -->
+                    <div class="dashboard-card" data-aos="fade-up" data-aos-delay="200">
+                        <h2 class="card-title">🌦️ Current Weather</h2>
+                        <div class="weather-display">
+                            <div class="weather-main">
+                                <div class="weather-icon">☀️</div>
+                                <div class="weather-temp">28°C</div>
+                            </div>
+                            <div class="weather-details">
+                                <div class="weather-item">
+                                    <span class="weather-label">Humidity:</span>
+                                    <span class="weather-value">65%</span>
+                                </div>
+                                <div class="weather-item">
+                                    <span class="weather-label">Rainfall (24h):</span>
+                                    <span class="weather-value">0 mm</span>
+                                </div>
+                                <div class="weather-item">
+                                    <span class="weather-label">Wind Speed:</span>
+                                    <span class="weather-value">12 km/h</span>
+                                </div>
+                                <div class="weather-item">
+                                    <span class="weather-label">Conditions:</span>
+                                    <span class="weather-value">Clear Sky</span>
+                                </div>
+                            </div>
+                            <div class="data-note">
+                                📡 Weather data will be fetched automatically based on location
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Prediction Cards -->
+                <div class="predictions-grid">
+                    <div class="prediction-card">
+                        <div class="prediction-icon">💚</div>
+                        <h3>Crop Health Score</h3>
+                        <div id="health-score" class="prediction-value">82/100</div>
+                        <div id="health-status" class="prediction-status good">Good Health</div>
+                        <p id="health-detail" class="prediction-detail">
+                            Your crop shows healthy growth patterns with adequate nutrition and water levels.
+                        </p>
+                    </div>
+
+                    <div class="prediction-card">
+                        <div class="prediction-icon">🌾</div>
+                        <h3>Expected Yield</h3>
+                        <div id="yield-val" class="prediction-value">4.2 tons/ha</div>
+                        <div id="yield-status" class="prediction-status excellent">Above Average</div>
+                        <p id="yield-detail" class="prediction-detail">
+                            Projected yield is 15% higher than regional average based on current conditions.
+                        </p>
+                    </div>
+
+                    <div class="prediction-card">
+                        <div class="prediction-icon">🌱</div>
+                        <h3>Growth Stage</h3>
+                        <div id="growth-stage" class="prediction-value">Vegetative</div>
+                        <div id="growth-days" class="prediction-status good">Day 45/120</div>
+                        <p id="growth-detail" class="prediction-detail">
+                            Crop is in active vegetative growth phase. Flowering expected in 20-25 days.
+                        </p>
+                    </div>
+
+                    <div class="prediction-card">
+                        <div class="prediction-icon">🦠</div>
+                        <h3>Disease Risk</h3>
+                        <div id="disease-risk" class="prediction-value">Low</div>
+                        <div id="disease-val" class="prediction-status excellent">18%</div>
+                        <p id="disease-detail" class="prediction-detail">
+                            No significant disease indicators detected. Continue preventive measures.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Growth Simulation Graph -->
+                <div class="chart-section">
+                    <h2 class="section-title">📈 Crop Growth Simulation (Digital Twin)</h2>
+                    <div class="chart-card">
+                        <canvas id="growthChart"></canvas>
+                    </div>
+                    <p class="chart-description">
+                        This graph shows the digital twin simulation of your crop's growth trajectory 
+                        compared to optimal conditions and historical data.
+                    </p>
+                </div>
+
+                <!-- Recommendation Section -->
+                <div class="recommendation-section">
+                    <h2 class="section-title">🎯 Best Crop Recommendation</h2>
+                    <div class="recommendation-card">
+                        <div class="recommendation-header">
+                            <div class="recommendation-icon">🌾</div>
+                            <div>
+                                <h3 id="rec-crop">Recommended: Rice (Paddy)</h3>
+                                <p id="rec-confidence" class="recommendation-confidence">Confidence: 92%</p>
+                            </div>
+                        </div>
+                        <div class="recommendation-content">
+                            <h4>Why this recommendation?</h4>
+                            <ul class="recommendation-reasons">
+                                <li>✅ Optimal soil pH (6.8) for rice cultivation</li>
+                                <li>✅ High water availability in your region</li>
+                                <li>✅ Current market demand is high (₹2,850/quintal)</li>
+                                <li>✅ Weather forecast favorable for next 90 days</li>
+                                <li>✅ Your soil NPK levels match rice requirements</li>
+                            </ul>
+                            
+                            <h4>Expected Outcomes:</h4>
+                            <div class="outcome-grid">
+                                <div class="outcome-item">
+                                    <strong>Yield:</strong> 5.2-5.8 tons/ha
+                                </div>
+                                <div class="outcome-item">
+                                    <strong>Duration:</strong> 120-130 days
+                                </div>
+                                <div class="outcome-item">
+                                    <strong>Revenue:</strong> ₹148,000 - ₹165,000/ha
+                                </div>
+                                <div class="outcome-item">
+                                    <strong>ROI:</strong> 145%
+                                </div>
+                            </div>
+
+                            <h4>Alternative Crops:</h4>
+                            <div class="alternative-crops">
+                                <span class="crop-badge">Cotton (78% match)</span>
+                                <span class="crop-badge">Sugarcane (71% match)</span>
+                                <span class="crop-badge">Maize (68% match)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. ABOUT PAGE -->
+        <section id="about" class="page">
+            <div class="container">
+                <h1 class="page-title">About AgriTwin</h1>
+                <p class="page-subtitle">Transforming agriculture with AI and Digital Twin technology</p>
+
+                <!-- Mission -->
+                <div class="mission-section">
+                    <div class="mission-content">
+                        <h2>Our Mission</h2>
+                        <p>
+                            AgriTwin leverages cutting-edge artificial intelligence, satellite imagery, and digital twin 
+                            technology to empower farmers with data-driven insights. Our platform helps predict crop health, 
+                            optimize yields, and make informed decisions about what to grow and when to harvest.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Technologies Used -->
+                <div class="tech-section">
+                    <h2 class="section-title">🚀 Technologies Used</h2>
+                    <div class="tech-grid">
+                        <div class="tech-card">
+                            <div class="tech-icon">🛰️</div>
+                            <h3>Satellite Imaging</h3>
+                            <p class="tech-source">ISRO BHUVAN (OPIE)</p>
+                            <p>
+                                High-resolution multispectral satellite imagery from India's space program provides 
+                                real-time monitoring of crop health, vegetation indices, and land use patterns.
+                            </p>
+                            <ul class="tech-features">
+                                <li>10m spatial resolution</li>
+                                <li>NDVI & NDWI analysis</li>
+                                <li>Weekly image updates</li>
+                                <li>Historical data archive</li>
+                            </ul>
+                        </div>
+
+                        <div class="tech-card">
+                            <div class="tech-icon">🤖</div>
+                            <h3>Machine Learning</h3>
+                            <p class="tech-source">Python, TensorFlow, PyTorch</p>
+                            <p>
+                                Advanced ML models trained on millions of data points to predict crop yields, 
+                                disease risks, and optimal harvest timing with high accuracy.
+                            </p>
+                            <ul class="tech-features">
+                                <li>Deep learning for image analysis</li>
+                                <li>Time-series forecasting</li>
+                                <li>Anomaly detection</li>
+                                <li>Continuous model improvement</li>
+                            </ul>
+                        </div>
+
+                        <div class="tech-card">
+                            <div class="tech-icon">✨</div>
+                            <h3>Generative AI</h3>
+                            <p class="tech-source">GPT-4, LLaMA, Custom Models</p>
+                            <p>
+                                Natural language processing and generative AI provide personalized recommendations, 
+                                answer farmer queries, and generate actionable insights from complex data.
+                            </p>
+                            <ul class="tech-features">
+                                <li>Conversational AI assistant</li>
+                                <li>Automated report generation</li>
+                                <li>Multi-language support</li>
+                                <li>Context-aware suggestions</li>
+                            </ul>
+                        </div>
+
+                        <div class="tech-card">
+                            <div class="tech-icon">🌐</div>
+                            <h3>Digital Twin</h3>
+                            <p class="tech-source">IoT + AI + Simulation</p>
+                            <p>
+                                Create virtual replicas of farms that mirror real-world conditions and allow 
+                                simulation of different scenarios before making critical farming decisions.
+                            </p>
+                            <ul class="tech-features">
+                                <li>Real-time synchronization</li>
+                                <li>What-if scenario analysis</li>
+                                <li>Physics-based modeling</li>
+                                <li>Predictive optimization</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Architecture Diagram -->
+                <div class="architecture-section">
+                    <h2 class="section-title">🏗️ System Architecture</h2>
+                    <div class="architecture-diagram">
+                        <div class="arch-layer">
+                            <h3>Frontend Layer</h3>
+                            <div class="arch-components">
+                                <div class="arch-component">
+                                    <div class="comp-icon">💻</div>
+                                    <span>Web Application</span>
+                                    <small>HTML, CSS, JavaScript</small>
+                                </div>
+                                <div class="arch-component">
+                                    <div class="comp-icon">📱</div>
+                                    <span>Mobile App</span>
+                                    <small>React Native</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="arch-arrow">↓</div>
+
+                        <div class="arch-layer">
+                            <h3>Backend Layer</h3>
+                            <div class="arch-components">
+                                <div class="arch-component">
+                                    <div class="comp-icon">⚡</div>
+                                    <span>API Server</span>
+                                    <small>Python FastAPI</small>
+                                </div>
+                                <div class="arch-component">
+                                    <div class="comp-icon">🔐</div>
+                                    <span>Authentication</span>
+                                    <small>JWT, OAuth</small>
+                                </div>
+                                <div class="arch-component">
+                                    <div class="comp-icon">💾</div>
+                                    <span>Database</span>
+                                    <small>PostgreSQL, MongoDB</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="arch-arrow">↓</div>
+
+                        <div class="arch-layer">
+                            <h3>AI/ML Layer</h3>
+                            <div class="arch-components">
+                                <div class="arch-component">
+                                    <div class="comp-icon">🧠</div>
+                                    <span>ML Models</span>
+                                    <small>TensorFlow, PyTorch</small>
+                                </div>
+                                <div class="arch-component">
+                                    <div class="comp-icon">🔮</div>
+                                    <span>Prediction Engine</span>
+                                    <small>Custom Algorithms</small>
+                                </div>
+                                <div class="arch-component">
+                                    <div class="comp-icon">📊</div>
+                                    <span>Analytics</span>
+                                    <small>Pandas, NumPy</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="arch-arrow">↓</div>
+
+                        <div class="arch-layer">
+                            <h3>Data Sources</h3>
+                            <div class="arch-components">
+                                <div class="arch-component">
+                                    <div class="comp-icon">🛰️</div>
+                                    <span>ISRO BHUVAN</span>
+                                    <small>Satellite Imagery</small>
+                                </div>
+                                <div class="arch-component">
+                                    <div class="comp-icon">🌦️</div>
+                                    <span>Weather APIs</span>
+                                    <small>IMD, OpenWeather</small>
+                                </div>
+                                <div class="arch-component">
+                                    <div class="comp-icon">💹</div>
+                                    <span>Market Data</span>
+                                    <small>Agmarknet</small>
+                                </div>
+                                <div class="arch-component">
+                                    <div class="comp-icon">🧪</div>
+                                    <span>Soil Database</span>
+                                    <small>ICAR, State Labs</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Data Sources -->
+                <div class="data-sources-section">
+                    <h2 class="section-title">📡 Data Sources</h2>
+                    <div class="sources-grid">
+                        <div class="source-card">
+                            <h4>🛰️ ISRO BHUVAN (OPIE)</h4>
+                            <p>India's premier geospatial platform providing satellite imagery and remote sensing data</p>
+                        </div>
+                        <div class="source-card">
+                            <h4>� SoilGrids.org</h4>
+                            <p>Global soil property data from ISRIC - World Soil Information at 250m resolution, integrated via REST API</p>
+                        </div>
+                        <div class="source-card">
+                            <h4>🌦️ Weather APIs</h4>
+                            <p>India Meteorological Department (IMD), OpenWeather, and local weather station networks</p>
+                        </div>
+                        <div class="source-card">
+                            <h4>💹 Market Price Data</h4>
+                            <p>Agmarknet, state APMC mandis, and commodity exchange platforms</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact / Footer Info -->
+                <div class="footer-info">
+                    <h2 class="section-title">📧 Get in Touch</h2>
+                    <p>
+                        Interested in using AgriTwin for your farm? Contact us to learn more about our platform 
+                        and get started with AI-powered smart farming.
+                    </p>
+                    <div class="contact-buttons">
+                        <button class="btn btn-primary">Contact Us</button>
+                        <button class="btn btn-secondary">Request Demo</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>AgriTwin</h3>
+                <p>AI-powered Digital Twin for Smart Farming</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#dashboard">Dashboard</a></li>
+                    <li><a href="#predictions">Predictions</a></li>
+                    <li><a href="#about">About</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Data Sources</h4>
+                <ul>
+                    <li>ISRO BHUVAN (OPIE)</li>
+                    <li>SoilGrids.org (ISRIC)</li>
+                    <li>India Meteorological Dept.</li>
+                    <li>Agmarknet</li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Technology</h4>
+                <ul>
+                    <li>Machine Learning</li>
+                    <li>Satellite Imagery</li>
+                    <li>Digital Twin</li>
+                    <li>Generative AI</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 AgriTwin. All rights reserved. Built for sustainable agriculture.</p>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
